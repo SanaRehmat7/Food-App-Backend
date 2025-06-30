@@ -1,4 +1,5 @@
 import express from "express";
+import { fixHandler } from "../utils/fixHandler";
 import { param } from "express-validator";
 import RestaurantController from "../controllers/RestaurantController";
 
@@ -11,9 +12,10 @@ router.get(
     .trim()
     .notEmpty()
     .withMessage("RestaurantId paramenter must be a valid string"),
-  RestaurantController.getRestaurant
+  ...fixHandler([], RestaurantController.getRestaurant)
 );
 
+// /api/restaurant/search/london
 router.get(
   "/search/:city",
   param("city")
@@ -21,7 +23,7 @@ router.get(
     .trim()
     .notEmpty()
     .withMessage("City paramenter must be a valid string"),
-  RestaurantController.searchRestaurant
+  ...fixHandler([], RestaurantController.searchRestaurant)
 );
 
 export default router;

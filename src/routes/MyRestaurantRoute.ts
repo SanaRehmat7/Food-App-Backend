@@ -1,8 +1,10 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import multer from "multer";
 import MyRestaurantController from "../controllers/MyRestaurantController";
 import { jwtCheck, jwtParse } from "../middleware/auth";
+import { fixHandler } from "../utils/fixHandler";
 import { validateMyRestaurantRequest } from "../middleware/validation";
+import MyUserController from "../controllers/MyUserController";
 
 const router = express.Router();
 
@@ -16,36 +18,79 @@ const upload = multer({
 
 router.get(
   "/order",
-  jwtCheck,
-  jwtParse,
-  MyRestaurantController.getMyRestaurantOrders
+  ...fixHandler(
+    [jwtCheck, jwtParse],
+    MyRestaurantController.getMyRestaurantOrders
+  )
 );
 
 router.patch(
   "/order/:orderId/status",
-  jwtCheck,
-  jwtParse,
-  MyRestaurantController.updateOrderStatus
+  ...fixHandler(
+    [jwtCheck, jwtParse],
+    MyRestaurantController.updateOrderStatus
+  )
 );
 
-router.get("/", jwtCheck, jwtParse, MyRestaurantController.getMyRestaurant);
+router.get(
+  "/",
+  ...fixHandler(
+    [jwtCheck, jwtParse],
+    MyRestaurantController.getMyRestaurant
+  )
+);
 
 router.post(
   "/",
-  upload.single("imageFile"),
-  validateMyRestaurantRequest,
-  jwtCheck,
-  jwtParse,
-  MyRestaurantController.createMyRestaurant
+  ...fixHandler(
+    [
+      upload.single("imageFile"),
+      ...(validateMyRestaurantRequest as RequestHandler[]),
+      jwtCheck,
+      jwtParse,
+    ],
+    MyRestaurantController.createMyRestaurant
+  )
 );
 
 router.put(
   "/",
-  upload.single("imageFile"),
-  validateMyRestaurantRequest,
-  jwtCheck,
-  jwtParse,
-  MyRestaurantController.updateMyRestaurant
+  ...fixHandler(
+    [
+      upload.single("imageFile"),
+      ...(validateMyRestaurantRequest as RequestHandler[]),
+      jwtCheck,
+      jwtParse,
+    ],
+    MyRestaurantController.updateMyRestaurant
+  )
 );
 
+
 export default router;
+
+
+// //test
+// import express from "express";
+// import multer from "multer";
+// import { fixHandler } from "../utils/fixHandler";
+// import MyRestaurantController from "../controllers/MyRestaurantController";
+
+// const router = express.Router();
+
+// const storage = multer.memoryStorage();
+// const upload = multer({
+//   storage: storage,
+//   limits: {
+//     fileSize: 5 * 1024 * 1024, // 5MB
+//   },
+// });
+
+// // Route without auth or validation
+// router.post(
+//   "/",
+//   upload.single("imageFile"),
+//   ...fixHandler([], MyRestaurantController.createMyRestaurant)
+// );
+
+// export default router;
