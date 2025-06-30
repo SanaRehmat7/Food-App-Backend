@@ -68,29 +68,3 @@ router.put(
 
 
 export default router;
-
-
-// //test
-// import express from "express";
-// import multer from "multer";
-// import { fixHandler } from "../utils/fixHandler";
-// import MyRestaurantController from "../controllers/MyRestaurantController";
-
-// const router = express.Router();
-
-// const storage = multer.memoryStorage();
-// const upload = multer({
-//   storage: storage,
-//   limits: {
-//     fileSize: 5 * 1024 * 1024, // 5MB
-//   },
-// });
-
-// // Route without auth or validation
-// router.post(
-//   "/",
-//   upload.single("imageFile"),
-//   ...fixHandler([], MyRestaurantController.createMyRestaurant)
-// );
-
-// export default router;
